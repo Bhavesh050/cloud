@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Attendance</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h2>Attendance System</h2>
+
+<input type="text" id="name" placeholder="Enter Name">
+<br><br>
+
+<button onclick="mark('Present')">Present</button>
+<button onclick="mark('Absent')">Absent</button>
+
+<br><br>
+
+<button onclick="loadData()">View Records</button>
+<button onclick="deleteAll()">Delete All</button>
+
+<ul id="list"></ul>
+
+<script>
+async function mark(status) {
+  const name = document.getElementById('name').value;
+
+  await fetch('/mark', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, status })
+  });
+
+  alert("Marked!");
+}
+
+async function loadData() {
+  const res = await fetch('/records');
+  const data = await res.json();
+
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  data.forEach(item => {
+    const li = document.createElement('li');
+    li.innerText = `${item.name} - ${item.status} - ${item.time}`;
+    list.appendChild(li);
+  });
+}
+
+async function deleteAll() {
+  await fetch('/delete', { method: 'POST' });
+  alert("Deleted!");
+}
+</script>
+
+</body>
+</html>
